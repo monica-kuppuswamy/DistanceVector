@@ -8,13 +8,17 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class DistanceVector {
 
 	public DistanceVector() {
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		
@@ -24,13 +28,21 @@ public class DistanceVector {
 //		String fileLine = br.readLine();
 //		System.out.println(fileLine);
 //		br.close();
+		
 		String fileName = args[1];
 		Boolean flag = true;
 		byte[] sendData = new byte[1024];
 		byte[] receiveData = new byte[1024];
+		
 		int portNumber = Integer.parseInt(args[0]);
 		InetAddress IPAddress = InetAddress.getByName("localhost");
+		
 		DatagramSocket clientSocket = new DatagramSocket(portNumber);
+		
+		Router self = new Router();
+		
+		Router neighbour = new Router();
+		neighbour.setRouterName("notSet");
 
 		while(true){
 			try{
@@ -41,10 +53,12 @@ public class DistanceVector {
 				}
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				clientSocket.receive(receivePacket);
-				File f = new File((System.getProperty("user.dir")).toString()+ "\\routerinfo\\" + fileName);
+				File f = new File((System.getProperty("user.dir")).toString()+ "\\routerinfo\\" + fileName + "_neighbour.txt");
 				FileOutputStream fos = new FileOutputStream(f);
-				fos.write(receiveData);
+				//fos.write(receiveData);
+				fos.write(receivePacket.getData());
 				fos.close();
+				neighbour.getExistingDistanceVector(fileName+"_neighbour");
 				
 			}
 			catch(Exception e){
@@ -57,10 +71,23 @@ public class DistanceVector {
 //			     }
 				System.out.println("In catch block");
 				flag = true;
-				Files.readAllBytes(new File((System.getProperty("user.dir")).toString()+ "\\routerinfo\\" + fileName).toPath());
+				
+				if (neighbour.getRouterName()!= "notSet"){
+					self.recomputeDistanceVector(neighbour);
+				}
+				
+				self.addToFile(self);
+				
+				sendData = Files.readAllBytes(new File((System.getProperty("user.dir")).toString()+ "\\routerinfo\\" + fileName + ".txt").toPath());
 
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, portNumber);
-				clientSocket.send(sendPacket);
+				Iterator<Entry<String, Integer>> it = self.getNeighbourPort().entrySet().iterator();
+			    while (it.hasNext()) {
+			        Map.Entry<String, Integer> pair = (Entry<String, Integer>)it.next();
+//			        System.out.println(pair.getKey() + " = " + pair.getValue());
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, pair.getValue());
+					clientSocket.send(sendPacket);
+			        it.remove();
+			    }
 				
 			}
 		}

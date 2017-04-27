@@ -85,9 +85,13 @@ public class Router {
 			
 			neighbourNextHop.put(parameters[0], parameters[2]);
 			setNeighbourNextHop(neighbourNextHop);
-			
-			neighbourPort.put(parameters[0], Integer.parseInt(parameters[3]));
-			setNeighbourPort(neighbourPort);
+			try{
+				neighbourPort.put(parameters[0], Integer.parseInt(parameters[3]));
+				setNeighbourPort(neighbourPort);
+			}
+			catch(Exception e){
+				System.out.println(e);
+			}
 		}
 		br.close();
 	}
@@ -95,7 +99,7 @@ public class Router {
 	public void addToFile(Router r) throws IOException {
 		String filePath = (System.getProperty("user.dir")).toString() + "\\routerinfo\\" + r.routerName + ".txt";
 		FileWriter fw = new FileWriter(filePath, false);
-		fw.write(r.noOfNeighbours);
+		fw.write(Integer.toString(r.noOfNeighbours));
 		for (String key : r.neighbourCost.keySet()) {
 			if (r.neighbourPort.get(key) != null) {
 				fw.write("\n" + key +  " " + r.neighbourCost.get(key) + " " + r.neighbourNextHop.get(key) + " " + r.neighbourPort.get(key));
@@ -108,21 +112,21 @@ public class Router {
 	
 	public void recomputeDistanceVector(Router advertisingRouter) throws IOException {
 		String nextHop = advertisingRouter.getRouterName();
-		double costFromRcvToAd = this.neighbourCost.get(advertisingRouter.getRouterName());
+		double costFromRcvToAd = neighbourCost.get(advertisingRouter.getRouterName());
 		for (String adNeighbour : advertisingRouter.neighbourCost.keySet()) {
-			if (this.neighbourCost.keySet().contains(adNeighbour) && !(adNeighbour.equals(this.routerName))) {
-				if (this.neighbourCost.get(adNeighbour) != null)
+			if (neighbourCost.keySet().contains(adNeighbour) && !(adNeighbour.equals(routerName))) {
+				if (neighbourCost.get(adNeighbour) != null)
 				{
-					if (advertisingRouter.neighbourCost.get(adNeighbour) + costFromRcvToAd < this.neighbourCost.get(adNeighbour)) {
-						this.neighbourCost.put(adNeighbour, advertisingRouter.neighbourCost.get(adNeighbour) + costFromRcvToAd);
-						this.neighbourNextHop.put(adNeighbour, nextHop);
+					if (advertisingRouter.neighbourCost.get(adNeighbour) + costFromRcvToAd < neighbourCost.get(adNeighbour)) {
+						neighbourCost.put(adNeighbour, advertisingRouter.neighbourCost.get(adNeighbour) + costFromRcvToAd);
+						neighbourNextHop.put(adNeighbour, nextHop);
 					}
 				}
 			} else {
-				if (!(adNeighbour.equals(this.routerName))) {
+				if (!(adNeighbour.equals(routerName))) {
 					System.out.println(adNeighbour);
-					this.neighbourCost.put(adNeighbour, costFromRcvToAd + advertisingRouter.neighbourCost.get(adNeighbour));
-					this.neighbourNextHop.put(adNeighbour, nextHop);
+					neighbourCost.put(adNeighbour, costFromRcvToAd + advertisingRouter.neighbourCost.get(adNeighbour));
+					neighbourNextHop.put(adNeighbour, nextHop);
 				}
 			}
 		}
