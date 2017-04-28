@@ -49,13 +49,6 @@ public class DistanceVector {
 				srcRouter.recomputeDistanceVector(neighborRouter);
 				srcRouter.addToFile();
 				
-				List<String> nodeCosts = new ArrayList<String>(srcRouter.getNeighbourCost().keySet());
-				for (int i = 0; i < nodeCosts.size(); i++) {
-					System.out.println("Shortest Path " + srcRouter.getRouterName() + "-" + nodeCosts.get(i) + ":" + 
-								"Next Hop is " + srcRouter.getNeighbourNextHop().get(nodeCosts.get(i)) + " and the cost is" + 
-								srcRouter.getNeighbourCost().get(nodeCosts.get(i)));
-				}
-				System.out.println("\n");
 			}
 			
 			catch (Exception e) {
@@ -69,6 +62,14 @@ public class DistanceVector {
 					clientSocket.send(sendPacket);
 			        it.remove();
 			    }
+				List<String> nodeCosts = new ArrayList<String>(srcRouter.getNeighbourCost().keySet());
+				for (int i = 0; i < nodeCosts.size(); i++) {
+					System.out.println("Shortest Path " + srcRouter.getRouterName() + "-" + nodeCosts.get(i) + ":" + 
+								"Next Hop is " + srcRouter.getNeighbourNextHop().get(nodeCosts.get(i)) + " and the cost is" + 
+								srcRouter.getNeighbourCost().get(nodeCosts.get(i)));
+				}
+				System.out.println("\n");
+
 			}
 		}
 	}
