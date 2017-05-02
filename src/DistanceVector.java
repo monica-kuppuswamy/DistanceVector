@@ -21,6 +21,7 @@ public class DistanceVector {
 		Boolean flag = true;
 		byte[] receiveData = new byte[1024];
 		byte[] sendData = new byte[1024];
+		int counter = 1;
 		
 		int portNumber = Integer.parseInt(args[0]);
 		InetAddress IPAddress = InetAddress.getByName("localhost");
@@ -62,6 +63,7 @@ public class DistanceVector {
 					clientSocket.send(sendPacket);
 			        it.remove();
 			    }
+			    System.out.println("Output Number: " + counter);
 				List<String> nodeCosts = new ArrayList<String>(srcRouter.getNeighbourCost().keySet());
 				for (int i = 0; i < nodeCosts.size(); i++) {
 					System.out.println("Shortest Path " + srcRouter.getRouterName() + "-" + nodeCosts.get(i) + ":" + 
@@ -69,7 +71,7 @@ public class DistanceVector {
 								srcRouter.getNeighbourCost().get(nodeCosts.get(i)));
 				}
 				System.out.println("\n");
-
+				counter++;
 			}
 		}
 	}

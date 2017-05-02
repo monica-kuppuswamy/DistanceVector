@@ -122,7 +122,7 @@ public class Router implements Serializable {
 			if (this.neighbourCost.keySet().contains(adNeighbour) && !(adNeighbour.equals(routerName))) {
 				if (this.neighbourCost.get(adNeighbour) != null)
 				{
-					if (advertisingRouter.neighbourCost.get(adNeighbour) + costFromRcvToAd < this.neighbourCost.get(adNeighbour)) {
+					if (advertisingRouter.neighbourCost.get(adNeighbour) + costFromRcvToAd <= this.neighbourCost.get(adNeighbour)) {
 						this.neighbourCost.put(adNeighbour, advertisingRouter.neighbourCost.get(adNeighbour) + costFromRcvToAd);
 						this.neighbourNextHop.put(adNeighbour, nextHop);
 					}
